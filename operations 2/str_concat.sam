@@ -1,0 +1,101 @@
+// str_concat
+// Input: Memory Address, Memory Address
+// Output: Memory Address
+// Description: Allocates a new string and concatenates the input strings into the new string.  Places the
+//              memory address of the new string on the stack.
+
+//PUSHIMMSTR "test "
+//PUSHIMMSTR "string"
+DUP
+STOREABS 3000 // string 2 address
+SWAP 
+DUP
+STOREABS 3001 // string 1 address
+length1:
+    DUP
+    PUSHIMM 1
+    SUB
+    iterate1:
+        PUSHIMM 1
+        ADD 
+        DUP
+        PUSHIND
+        PUSHIMMCH '\0'
+        EQUAL
+        PUSHIMM 1
+        SUB
+        JUMPC iterate1
+    SWAP
+    SUB
+SWAP
+length2:
+    DUP
+    PUSHIMM 1
+    SUB
+    iterate2:
+        PUSHIMM 1
+        ADD 
+        DUP
+        PUSHIND
+        PUSHIMMCH '\0'
+        EQUAL
+        PUSHIMM 1
+        SUB
+        JUMPC iterate2
+    SWAP
+    SUB
+// allocate memory for both strings
+ADD
+PUSHIMM 1
+ADD
+MALLOC
+DUP
+STOREABS 3002 // concat string address 
+DUP 
+STOREABS 3003 // current pointer
+PUSHABS 3001
+iterate3:
+    PUSHIND
+    DUP
+    PUSHIMMCH '\0'
+    EQUAL
+    JUMPC end1
+    STOREIND
+    PUSHABS 3003
+    PUSHIMM 1 
+    ADD
+    DUP
+    STOREABS 3003
+    PUSHABS 3001
+    PUSHIMM 1
+    ADD
+    DUP
+    STOREABS 3001
+    JUMP iterate3
+end1:
+ADDSP -1
+PUSHABS 3000
+iterate4:
+    PUSHIND
+    DUP
+    PUSHIMMCH '\0'
+    EQUAL
+    JUMPC final
+    STOREIND
+    PUSHABS 3003
+    PUSHIMM 1 
+    ADD
+    DUP
+    STOREABS 3003
+    PUSHABS 3000
+    PUSHIMM 1
+    ADD
+    DUP
+    STOREABS 3000
+    JUMP iterate4
+final:
+ADDSP -1
+PUSHIMMCH '\0'
+STOREIND
+PUSHABS 3002
+//STOP

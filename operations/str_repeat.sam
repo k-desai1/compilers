@@ -1,0 +1,91 @@
+// str_repeat
+// Input: Memory Address, Integer
+// Output: Memory Address
+// Description: Allocates a new string and copies the string at the input memory address into the new
+//              string a number of times equal to the integer input.  Places the memory address of the
+//              new string on the stack. 
+
+
+//PUSHIMMSTR "a"
+//PUSHIMM 6
+
+SWAP
+DUP
+STOREABS 3000 // string address
+PUSHIMM 0
+STOREABS 3004 // counter for new string
+PUSHIMM 1
+MALLOC
+STOREABS 3002 // new string address default of 1 spot
+length:
+    DUP
+    PUSHIMM 1
+    SUB
+    iterate:
+        PUSHIMM 1
+        ADD 
+        DUP
+        PUSHIND
+        PUSHIMMCH '\0'
+        EQUAL
+        PUSHIMM 1
+        SUB
+        JUMPC iterate
+    SWAP
+    SUB
+
+alloc:
+    DUP
+    STOREABS 3001 // string length
+    TIMES
+    DUP
+    STOREABS 3005 // new string length
+    PUSHIMM 1
+    LESS
+    JUMPC final
+    PUSHABS 3005
+    PUSHIMM 1
+    ADD
+    MALLOC
+    STOREABS 3002 // new string address
+
+
+copy:
+    restart:
+        PUSHIMM 0
+        STOREABS 3003 // counter for original string
+        iterate2:
+            PUSHABS 3003
+            PUSHABS 3001
+            EQUAL
+            JUMPC restart // reset counter to 0
+            PUSHABS 3004
+            PUSHABS 3005
+            EQUAL
+            JUMPC final // end loop
+            PUSHABS 3000
+            PUSHABS 3003
+            ADD
+            PUSHIND
+            PUSHABS 3004
+            PUSHABS 3002
+            ADD
+            SWAP
+            STOREIND
+            PUSHABS 3003
+            PUSHIMM 1
+            ADD
+            STOREABS 3003
+            PUSHABS 3004
+            PUSHIMM 1
+            ADD
+            STOREABS 3004
+            JUMP iterate2
+final:
+    PUSHABS 3004
+    PUSHABS 3002
+    ADD
+    PUSHIMMCH '\0'
+    STOREIND
+    PUSHABS 3002
+//STOP

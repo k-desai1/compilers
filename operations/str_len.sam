@@ -1,0 +1,22 @@
+// str_len
+// Input: Memory Address
+// Output: Integer
+// Description: Computes the length of the null-terminated character array at the input memory address.
+//              Places the return value on the stack.
+
+//PUSHIMMSTR "hello" // test string
+DUP
+PUSHIMM 1
+SUB
+iterate:
+    PUSHIMM 1
+    ADD 
+    DUP
+    PUSHIND
+    PUSHIMMCH '\0'
+    EQUAL
+    PUSHIMM 1
+    SUB
+    JUMPC iterate
+SWAP
+SUB

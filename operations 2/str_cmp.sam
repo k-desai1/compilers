@@ -1,0 +1,184 @@
+// str_cmp
+// Input: Memory Address, Memory Address
+// Output: Integer
+// Description: Compares the two input values. If the first input value is bigger than the second input value, a 1 is placed on the stack. 
+//              If they are equal, a 0 is placed on the stack. If the first input value is smaller than the second input value, a -1 is placed on the stack.
+
+
+//PUSHIMMSTR "23499"
+//PUSHIMMSTR "323"
+
+DUP
+STOREABS 3002 // string 2 address 
+SWAP
+DUP
+STOREABS 3001 // string 1 address
+length1:
+    DUP
+    PUSHIMM 1
+    SUB
+    iterate1:
+        PUSHIMM 1
+        ADD 
+        DUP
+        PUSHIND
+        PUSHIMMCH '\0'
+        EQUAL
+        PUSHIMM 1
+        SUB
+        JUMPC iterate1
+    SWAP
+    SUB
+STOREABS 3003 // length of string 2
+length2:
+    DUP
+    PUSHIMM 1
+    SUB
+    iterate2:
+        PUSHIMM 1
+        ADD 
+        DUP
+        PUSHIND
+        PUSHIMMCH '\0'
+        EQUAL
+        PUSHIMM 1
+        SUB
+        JUMPC iterate2
+    SWAP
+    SUB
+STOREABS 3004 // length of string 1
+PUSHABS 3004
+PUSHABS 3003
+EQUAL 
+JUMPC iterate3
+
+PUSHABS 3004
+PUSHABS 3003
+CMP
+PUSHIMM 1
+ADD
+JUMPC first_length
+PUSHABS 3004
+STOREABS 3006
+PUSHABS 3003
+STOREABS 3008 // smaller string length
+PUSHABS 3001 
+STOREABS 3009 // smaller string address
+
+JUMP fill
+
+first_length:
+    PUSHABS 3003
+    STOREABS 3006
+    PUSHABS 3004
+    STOREABS 3008 // smaller string length
+    PUSHABS 3002 
+    STOREABS 3009 // smaller string address
+
+fill:
+    PUSHABS 3006
+    PUSHIMM 1
+    ADD
+    MALLOC
+    STOREABS 3007 // new string address
+    PUSHIMM -1
+    STOREABS 3005 // counter
+    iterate4: 
+        PUSHABS 3005
+        PUSHIMM 1
+        ADD
+        STOREABS 3005
+        PUSHABS 3005
+        PUSHIMM 1
+        ADD
+        PUSHABS 3008
+        GREATER
+        JUMPC pad 
+        PUSHABS 3005
+        PUSHABS 3009
+        ADD
+        PUSHIND
+        PUSHABS 3007
+        PUSHABS 3005
+        ADD
+        SWAP
+        STOREIND
+        JUMP iterate4
+        pad:
+            PUSHABS 3005
+            PUSHIMM 1
+            ADD
+            PUSHABS 3006
+            GREATER
+            JUMPC prep
+            PUSHIMMCH ' '
+            PUSHABS 3007
+            PUSHABS 3005
+            ADD
+            SWAP
+            STOREIND
+            PUSHABS 3005
+            PUSHIMM 1
+            ADD
+            STOREABS 3005
+            JUMP pad
+        
+prep:
+    PUSHABS 3005
+    PUSHABS 3007
+    ADD
+    PUSHIMMCH '\0'
+    STOREIND
+    PUSHABS 3008
+    PUSHABS 3003
+    EQUAL
+    JUMPC set1
+    PUSHABS 3007
+    STOREABS 3002
+    JUMP start
+
+set1:
+    PUSHABS 3007
+    STOREABS 3001
+    JUMP start
+
+iterate3:
+    PUSHABS 3003
+    STOREABS 3006
+
+start:
+    PUSHIMM -1 
+    STOREABS 3005 // counter
+    PUSHIMM 1
+    loop:
+        ADDSP -1
+        PUSHABS 3005
+        PUSHIMM 1
+        ADD
+        STOREABS 3005
+        PUSHABS 3005
+        PUSHABS 3006
+        EQUAL
+        JUMPC end
+        PUSHABS 3005
+        PUSHABS 3001
+        ADD
+        PUSHIND
+        PUSHABS 3005
+        PUSHABS 3002
+        ADD
+        PUSHIND
+        CMP
+        DUP
+        PUSHIMM 0
+        EQUAL
+        JUMPC loop
+final:
+    PUSHSP
+    PUSHIMM 0
+    GREATER
+    JUMPC final
+    PUSHIMM 0
+end:
+
+//STOP
